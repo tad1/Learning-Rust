@@ -1,14 +1,16 @@
 # Learning-Rust
 roadmap for learning rust, created by [tad1](https://github.com/tad1)  
 see an [example](https://github.com/tad1/Personal-Learning-Rust)
+*I created that to learn rust by myself.*
 
 ## Stage 0: Fork
 Fork this repo, so you can, even more, brag about your GitHub profile to the interviewer.
 
 ## Stage 1: Learn
 *a stage where you are getting know about Rust*  
+  
 Go, and clone [rustlings](https://github.com/rust-lang/rustlings).  
-Create a list (you can use ...) where you will write down ... your learned along with [rustlings](https://github.com/rust-lang/rustlings).
+Create a list (you can use ...) where you will write down keywords of what your learned along with [rustlings](https://github.com/rust-lang/rustlings) (see an [example](/Somewhat%20List.md)).
 
 
 ## Stage 2: Recall
