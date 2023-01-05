@@ -1,5 +1,6 @@
 # Learning-Rust
-roadmap for learning rust, created by [tad1](https://github.com/tad1)
+roadmap for learning rust, created by [tad1](https://github.com/tad1)  
+see an [example](https://github.com/tad1/Personal-Learning-Rust)
 
 ## Stage 0: Fork
 Fork this repo, so you can, even more, brag about your GitHub profile to the interviewer.
