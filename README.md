@@ -17,8 +17,8 @@ Review your list of what you learned.
 If you don't know what that ... even is ... just give it a shoot
 
 ## Stage 3: Reinforce
-*a stage where I yeet wood logs into you, and you are ... (doing some sort of acrobatics?)*</br>
+*a stage where you try to learn to handstand but I yeet wood logs into you*</br>
 
 
 ## General Tips:
-
+- Persuade your mates to create a group.
