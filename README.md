@@ -2,7 +2,8 @@
 No, it's not ready yet.
 
 # Learning-Rust
-roadmap for learning rust, created by [tad1](https://github.com/tad1)
+roadmap for learning rust, created by [tad1](https://github.com/tad1)  
+see an [example](https://github.com/tad1/Personal-Learning-Rust)
 
 ## Stage 0: Fork
 Fork this repo, so you can, even more, brag about your GitHub profile to the interviewer.
@@ -20,8 +21,8 @@ Review your list of what you learned.
 If you don't know what that ... even is ... just give it a shoot
 
 ## Stage 3: Reinforce
-*a stage where I yeet wood logs into you, and you are ... (doing some sort of acrobatics?)*</br>
+*a stage where you try to learn to handstand but I yeet wood logs into you*</br>
 
 
 ## General Tips:
-
+- Persuade your mates to create a group.
