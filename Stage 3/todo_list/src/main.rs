@@ -1,9 +1,11 @@
 
-use std::io::{self, Write};
+use std::{io::{self, Write}, process::Command};
 
 // Guide
 // - Start with a simple idea, don't think about making that modular (you will clean your code in next iteration)
 //      once you have a prototype, you can start thinking on implementation
+// If you want to clear screen checkout: https://doc.rust-lang.org/std/process/struct.Command.html
+
 
 // Modifications:
 // - Save the list, in cache, or executed directory
@@ -31,10 +33,20 @@ impl std::fmt::Display for Item {
 }
 
 fn main() {
+
+    fn clear(){
+        if cfg!(target_os = "windows") {
+            Command::new("cmd").arg("/C").arg("cls").status().expect("Can't execute 'cls' command");
+        } else {
+            Command::new("sh").arg("-C").arg("clear").status().expect("Can't execute 'clear' command");
+        }
+    }
+
     let mut list : Vec<Item> = vec![];
     let mut input = String::new();
-        
+
     loop {
+        clear();
         println!("Your List: ");
         for element in &list {
             println!("{}", element);
