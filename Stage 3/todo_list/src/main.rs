@@ -1,6 +1,12 @@
 
-use std::{io::{self, Write, Read}, process::Command, path::Path, fs::File};
+use std::{io::{self, Write, Read}, process::Command, path::Path, fs::File, error::Error};
 use serde::{Serialize, Deserialize};
+use tui::{backend::CrosstermBackend, Terminal};
+use crossterm::{
+    event::{read, Event, KeyCode, KeyEventKind, KeyModifiers},
+    execute, 
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, enable_raw_mode, disable_raw_mode}
+};
 
 // Guide
 // - Start with a simple idea, don't think about making that modular (you will clean your code in next iteration)
@@ -14,8 +20,16 @@ use serde::{Serialize, Deserialize};
 ///         If you are not famillar with concept of serialization check:
 ///             find a good resource about overall conecpts in serialization
 //      - and add it to your DevTools folder
-// - Allow your to navigate thought the list
-// Create separate buffer (add link)
+// 
+
+// API
+//      Allow for usign it with args
+
+/// TUI:
+///     - Allow your to navigate thought the list
+//      Create separate buffer (add link)
+// Alternative:
+/// https://docs.rs/crossterm/latest/crossterm/
 
 
 // Idea:
@@ -23,18 +37,76 @@ use serde::{Serialize, Deserialize};
 // - For futher modifications: "Why you would use app, insead of text file?"
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct ToDoList {
     list: Vec<Item>
 }
 
+
+macro_rules! assert_todo_in_range {
+    ($list:ident, $index:ident) => {
+        if($index > $list.len() || $list.len() == 0) {
+            println!("Out of range!");
+            return;
+        }
+    };
+    ($list:ident, $index:ident,$ret:ident) => {
+        if($index > $list.len() || $list.len() == 0) {
+            println!("Out of range!");
+            return $ret;
+        }
+    };
+}
+
 impl ToDoList {
-    fn load(path : &Path){
-        
+
+
+    fn clear(&mut self){
+        self.list.clear();
     }
-    fn save(path : &Path){
-        
+    
+    fn load(&mut self, path : &Path) -> Result<(), io::Error>{
+        self.clear();
+        let mut file = File::open(path.join("todo.json"))?;
+        let mut buffer = String::new();
+        file.read_to_string(&mut buffer).expect("Can't read from file");
+        let list : ToDoList = serde_json::from_str(&buffer).expect("Can't deserialize file");
+        self.list = list.list;            
+        Ok(())
     }
+    fn save(&self, path : &Path){
+        let save = serde_json::to_string(&self).expect("Can't serialize data!");
+        let mut buffer = File::create(path.join("todo.json")).expect("Can't create file!");
+        buffer.write(save.as_bytes()).expect("Can't write to buffer");
+    }
+
+    fn prepend(&mut self, index : usize, element : Item){
+        assert_todo_in_range!(self, index);
+        self.list.insert(index, element);
+    }
+
+    fn append(&mut self, index : usize, element : Item) {
+        if index + 1 > self.list.len() {
+            self.list.push(element);
+        } else {
+            self.list.insert(index + 1, element);
+        }
+    }
+
+    fn len(&self) -> usize {
+        self.list.len()
+    }
+
+    fn delete(&mut self, index : usize) -> Option<Item> {
+        assert_todo_in_range!(self, index, None);
+        Some(self.list.remove(index))
+    }
+
+    fn toggle(&mut self, index : usize) {
+        assert_todo_in_range!(self, index);
+        self.list[index].completed = !self.list[index].completed;
+    }
+
     fn new() -> ToDoList{
         ToDoList { list: vec![] }
     }
@@ -42,7 +114,7 @@ impl ToDoList {
 
 //TODO: add deserializer
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Item {
     title : String,
     completed : bool
@@ -56,8 +128,34 @@ impl std::fmt::Display for Item {
     }
 }
 
-fn main() {
+enum Commands{
+    Exit,
+    Add(String),
+    Delete(usize),
+    Toggle(usize),
+    Navigate
+}
 
+macro_rules! print_list {
+    ($list:ident, $index:ident) => {
+        clear();
+        println!("Your List: ");
+        let mut i = 0;
+        for element in &($list.list) {
+            if i == $index { print!(">")} else {print!(" ")}
+            println!("{}", element);
+            i += 1;
+        }
+    };
+}
+
+// UI, handle adding new element in nice way
+
+fn main() -> Result<(), io::Error>{
+    let stdout = io::stdout();
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
+    
     fn clear(){
         if cfg!(target_os = "windows") {
             Command::new("cmd").arg("/C").arg("cls").status().expect("Can't execute 'cls' command");
@@ -68,47 +166,97 @@ fn main() {
 
     let mut list : ToDoList = ToDoList::new();
     let mut input = String::new();
+    let mut index : usize = 0; //Why not to save that also?
 
+    print_list!(list, index);
+    execute!(io::stdout(), EnterAlternateScreen)?;
+    let path = Path::new(".");
+    list.load(&path)?;
     loop {
-        clear();
-        println!("Your List: ");
-        for element in &list.list {
-            println!("{}", element);
-        }
         print!("\n> ");
         let _ = io::stdout().flush();
         input.clear();
-        io::stdin().read_line(&mut input).unwrap();
-        
-        let values = input.split_once(" ");
-        if let Some(("add", commmand)) = values {
-            list.list.push(Item { title: commmand.trim_end().to_string(), completed: false });
-        } else if let Some(("toggle", index)) = values{
-            let val = index.trim().parse::<usize>();
+        // Need introduce modes
+        match read()? {
+            Event::FocusGained => {
+                
+            },
+            Event::FocusLost => {
+                
+            },
+            Event::Key(event) => {
+                if event.kind == KeyEventKind::Press  {
+                    match event.code {
+                        KeyCode::Up | KeyCode::Char('k') => {
+                            //If with CTRL, move element
+                            if event.modifiers == KeyModifiers::CONTROL {
+                                //assert, and move
+                            }
+                            if index != 0 { index -= 1; }
+                        }
+                        KeyCode::Down | KeyCode::Char('j') => {
+                            if index != list.list.len() - 1 { index += 1; }
+                        }
+                        KeyCode::Char(' ') => {
+                            list.toggle(index);
+                            list.save(path);
+                        }
+                        KeyCode::Char('a') => {
+                            //Append
+                            list.append(index, Item { title: String::from(""), completed: false });
+                            index = if list.len() == 1 {0} else {index + 1};
+                            print_list!(list, index);
+                            {
+                                //Enter insert mode
+                                loop {
+                                    let event = read()?;
+                                    if let Event::Key(code) = event {
+                                        if code.kind != KeyEventKind::Press {
+                                            continue;
+                                        }
+                                        let item: &mut Item = &mut list.list[index];
+                                        if code.code == KeyCode::Esc || code.code == KeyCode::Enter {
+                                            break;
+                                        } else if let KeyCode::Char(char) = code.code {
+                                            item.title.push(char);
+                                        } else if KeyCode::Backspace == code.code {
+                                            item.title.pop();
+                                        }
+                                        print_list!(list, index);
+                                    }
+                                }
 
-            if let Err(err) = &val {
-                println!("{} is not an integer", index);   
-            } else {
-                let val = val.unwrap();
-                if val < list.list.len() {
-                    list.list[val].completed = !list.list[val].completed;
-                } else {
-                    println!("Out of index");
+                            }
+                            list.save(path);
+                        }
+                        KeyCode::Delete | KeyCode::Char('x') => {
+                            // Delete selected
+                            list.delete(index);
+                            if index >= list.len(){
+                                index = if index > 0 {index - 1} else {0};
+                            }
+                            list.save(path);
+                        }
+                        KeyCode::Esc => {
+                            break;
+                        }
+                        _ => {}
+                    }
                 }
-            }
-        } else if let Some(("save", _)) = values {
-            let save = serde_json::to_string(&list).expect("Can't serialize data!");
-            let mut buffer = File::create("./todo.json").expect("Can't create file!");
-            buffer.write(save.as_bytes()).expect("Can't wire to buffer");
-        } else if let Some(("load", _)) = values {
-            let res = File::open("./todo.json");
-            if let Ok(mut file) = res {
-                let mut buffer = String::new();
-                file.read_to_string(&mut buffer).expect("Can't read from file");
-                list = serde_json::from_str(&buffer).unwrap();
-            }
-        }
-        
+            },
+            Event::Mouse(event) => {
 
+            },
+            Event::Paste(data) => {
+                
+            },
+            Event::Resize(width, height) => {
+                
+            },
+        }
+
+        print_list!(list, index);
     }
+    execute!(io::stdout(), LeaveAlternateScreen)?;
+    Ok(())
 }
