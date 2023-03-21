@@ -1,6 +1,6 @@
 
 use serde::{Serialize, Deserialize};
-use std::{io::{self, Write, Read}, process::Command, path::Path, fs::File, error::Error, slice::SliceIndex};
+use std::{io::{self, Write, Read}, process::Command, path::Path, fs::{File, OpenOptions}, error::Error, slice::SliceIndex};
 
 
 macro_rules! assert_todo_in_range {
@@ -51,10 +51,10 @@ impl ToDoList {
     
     pub fn load(&mut self, path : &Path) -> Result<(), io::Error>{
         self.clear();
-        let mut file = File::open(path)?;
+        let mut file = OpenOptions::new().write(true).create(true).read(true).open(path)?;
         let mut buffer = String::new();
         file.read_to_string(&mut buffer).expect("Can't read from file");
-        let list : ToDoList = serde_json::from_str(&buffer).expect("Can't deserialize file");
+        let list : ToDoList = serde_json::from_str(&buffer).unwrap_or(ToDoList::new());
         self.items = list.items;            
         Ok(())
     }

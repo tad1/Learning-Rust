@@ -8,7 +8,7 @@ use crossterm::{
 	execute, 
 	terminal::{EnterAlternateScreen, LeaveAlternateScreen, enable_raw_mode, disable_raw_mode}
 };
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Parser, Subcommand, ValueEnum, error::{ErrorKind, self}};
 
 // Guide
 // - Start with a simple idea, don't think about making that modular (you will clean your code in next iteration)
@@ -43,13 +43,8 @@ use clap::{Parser, Subcommand, ValueEnum};
 use tdl::{Item, ToDoList};
 
 
-
-
-
-
-//TODO: add deserializer
-
 #[derive(Debug, Parser)]
+#[command(arg_required_else_help(true))]
 struct Cli {
 	/// Set a custom todo file.
 	#[arg(short, long, value_name = "FILE")]
