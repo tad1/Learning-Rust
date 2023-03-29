@@ -1,8 +1,11 @@
 # Some work in progress is going now.
 No, it's not ready yet.
 
+## Things to add
+that it's learn yourself approach, which requires you to be curious about the mechanics in rust.
+
 # Learning-Rust
-roadmap for learning rust, created by [tad1](https://github.com/tad1)  
+roadmap for learning rust (for people who already program), created by [tad1](https://github.com/tad1)  
 see an [example](https://github.com/tad1/Personal-Learning-Rust)
 
 ## Stage 0: Fork
