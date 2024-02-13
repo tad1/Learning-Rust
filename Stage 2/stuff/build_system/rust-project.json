@@ -1,0 +1,10 @@
+{"sysroot_src":"/home/tad1/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library","crates":[
+    {"root_module":"src/bin/attributes.rs","edition":"2021","deps":[],"cfg":["test"]},
+    {"root_module":"src/bin/example.rs","edition":"2021","deps":[],"cfg":["test"]},
+    {"root_module":"src/bin/generics.rs","edition":"2021","deps":[],"cfg":["test"]},
+    {"root_module":"src/bin/map_err.rs","edition":"2021","deps":[],"cfg":["test"]},
+    {"root_module":"src/bin/marcos.rs","edition":"2021","deps":[],"cfg":["test"]},
+    {"root_module":"src/bin/multithreading.rs","edition":"2021","deps":[],"cfg":["test"]},
+    {"root_module":"src/bin/own_syntax.rs","edition":"2021","deps":[],"cfg":["test"]}, 
+    {"root_module":"src/bin/leak.rs","edition":"2021","deps":[],"cfg":["test"]}, 
+    {"root_module":"src/bin/borrow_split.rs","edition":"2021","deps":[],"cfg":["test"]}]}
