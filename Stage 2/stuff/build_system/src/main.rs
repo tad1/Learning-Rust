@@ -222,7 +222,7 @@ fn watch(){
 // https://rust-analyzer.github.io/manual.html#non-cargo-based-projects 
 fn main() {
     
-    let command : Subcommands = Subcommands::Run;
+    let command : Subcommands = Subcommands::Lsp;
 
     match command {
         Subcommands::Run => {
