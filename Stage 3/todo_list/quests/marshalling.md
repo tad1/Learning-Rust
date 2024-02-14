@@ -13,6 +13,7 @@ The task is to marshal and unmarshal data between program and file.
 > These limitation are more like guidelines for you to have a clear goal.
 
 Rules:
-- Don't write your own marshaller/serializer, find out one that will do the job.
+- Learn about Rust crate repository; Don't write your own marshaller/serializer, the challenge is to find out one that will do the job.
 - Use only documentation (can be any documentation), rust books, and source code. 
+- Don't use any "how to ... in Rust" materials, like articles, or tutorials.
     *But when you explore solutions feel free to explore the web.*

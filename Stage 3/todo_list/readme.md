@@ -1,7 +1,11 @@
-# TODO List
+# Write a TODO List
+Your first project.
 
-The first one should be easy.
-> Reminder: You may use only: documentation, source code, and the Rust Book.
+**Restrictions:**
+Standard Rules you may use only: 
+- Documentation
+- Source Code
+- Rust Books
 
 Create a struct, and implement traits for `TodoList`.
 
